@@ -14,6 +14,12 @@ using HomevoAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var portEnv = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(portEnv) && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{portEnv}");
+}
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
     ?? "Host=localhost;Database=homevo_db;Username=ali.;Password=";
@@ -56,7 +62,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 
-var defaultOrigins = new List<string> { "http://localhost:4200", "http://localhost:58812" };
+var defaultOrigins = new List<string> { "http://localhost:4200", "http://localhost:58812", "https://homevo-app-two.vercel.app" };
 var envOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? Environment.GetEnvironmentVariable("Cors__AllowedOrigins") ?? "")
     .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 foreach (var origin in envOrigins)
